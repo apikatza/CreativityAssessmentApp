@@ -1,0 +1,8 @@
+docker run --gpus all -v .:/workspace -p 8501:8501 -it --rm nvcr.io/nvidia/tensorflow:24.08-tf2-py3
+
+pip install -r requirements.txt
+
+streamlit run app.py \
+  --server.address=0.0.0.0 \
+  --server.port=8501 \
+  --server.enableCORS=false

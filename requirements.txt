@@ -1,0 +1,10 @@
+numpy==1.26.4
+fasttext
+Pillow
+transformers
+streamlit
+torch
+git+https://github.com/openai/CLIP.git
+streamlit-drawable-canvas
+imblearn
+scikit-learn
