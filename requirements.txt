@@ -8,3 +8,4 @@ git+https://github.com/openai/CLIP.git
 streamlit-drawable-canvas
 imblearn
 scikit-learn
+tensorflow
