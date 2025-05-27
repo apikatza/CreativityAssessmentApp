@@ -1,1 +1,2 @@
-models/*
+*.bin
+model_E.keras
