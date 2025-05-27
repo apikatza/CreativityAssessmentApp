@@ -94,7 +94,6 @@ def load_models():
     with st.spinner("Cargando, por favor espera... Esto puede tardar hasta 15 minutos la primera vez."):
         try:
             with st.spinner("Cargando modelos..."):
-                model_keras_E = tf.keras.models.load_model("models/model_E.keras", custom_objects={'rmse': rmse, "r2_score": r2_score})
                 model_keras_FLE = tf.keras.models.load_model("models/model_FLE.keras", custom_objects={'specificity_multi': specificity_multi, "f1_score_multi": f1_score_multi})
                 model_keras_T = tf.keras.models.load_model("models/model_T.keras", custom_objects={'specificity': specificity, "f1_score": f1_score})
 
@@ -111,7 +110,7 @@ def load_models():
                 model_clip, preprocess_clip = clip.load("ViT-B/32", device=device)
                 clip_classifier = joblib.load("models/model_O.pkl")
 
-            return model_keras_E, model_keras_FLE, model_keras_T, beto_tokenizer, beto_model, fasttext_model, model_clip, preprocess_clip, clip_classifier, device
+            return model_keras_FLE, model_keras_T, beto_tokenizer, beto_model, fasttext_model, model_clip, preprocess_clip, clip_classifier, device
         except Exception as e:
             st.error(f"Error al cargar modelos: {e}")
             raise
@@ -123,7 +122,7 @@ def get_beto_embedding(text, tokenizer, model, max_length=128):
     return outputs.last_hidden_state[0, 0, :].numpy()
 
 def evaluate_image_and_title(image: Image.Image, title: str, models):
-    model_keras_E, model_keras_FLE, model_keras_T, beto_tokenizer, beto_model, fasttext_model, model_clip, preprocess_clip, clip_classifier, device = st.session_state.models
+    model_keras_FLE, model_keras_T, beto_tokenizer, beto_model, fasttext_model, model_clip, preprocess_clip, clip_classifier, device = st.session_state.models
 
     results = {}
 
@@ -162,8 +161,6 @@ def evaluate_image_and_title(image: Image.Image, title: str, models):
     results["Originalidad del Dibujo"] = f"{pred_label:.2f}%"
 
     # Aquí usarías tus modelos Keras reales:
-    pred1 = model_keras_E.predict(img_array)
-    pred1 = int(round(pred1[0][0]))
     pred3 = model_keras_T.predict(np.expand_dims(beto_embedding, axis=0))
     pred3 = f"{pred3[0][0] * 100:.2f}%"  # Convertir a porcentaje y añadir símbolo %
     pred2 = model_keras_FLE.predict(np.expand_dims(fasttext_embedding, axis=0))
@@ -171,7 +168,6 @@ def evaluate_image_and_title(image: Image.Image, title: str, models):
     top_3_classes = [(i, f"{pred2[0][i] * 100:.2f}%") for i in top_3_indices]  # Obtener las clases y sus probabilidades en porcentaje
 
     results["Originalidad del Título"] = pred3
-    results["Elaboración"] = pred1
     results["Flexibilidad"] = top_3_classes
     
     return results
